@@ -1,0 +1,2 @@
+#!/bin/bash
+sort | uniq -c | grep 1 | tr -d ' ' | tr -d [:digit:]
