@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Print a story with the /etc/passwd file
+
+while IFS= read -r line; do
+
+	# save the variables
+	user=$(echo "$line" | cut -f 1 -d ':')
+	group=$(echo "$line" | cut -f 4 -d ':')
+	home_dir=$(echo "$line" | cut -f 6 -d ':')
+	shell=$(echo "$line" | cut -f 7 -d ':')
+	user_id=$(echo "$line" | cut -f 3 -d ':')
+	password=$(echo "$line" | cut -f 2 -d ':')
+	user_info=$(echo "$line" | cut -f 5 -d ':')
+
+	echo -n "The user $user is part of the $group gang, "
+	echo -n "lives in $home_dir and rides $shell. "
+	echo -n "$user_id's place is protected by the passcode $password, "
+	echo "more info about the user here: $user_info"
+
+done < /etc/passwd
