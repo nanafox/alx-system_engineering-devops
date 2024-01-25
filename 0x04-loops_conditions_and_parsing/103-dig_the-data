@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# This script parses an Apache Web server log and prints the IP and HTTP status
+# code, odered from the greatest to the lowest number of occurrences.
+
+awk '{print $1,$9}' apache-access.log | sort | uniq -c | sort -r
