@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# This loops from 1 to 10 using the `while` loop and displays
+	# "bad luck" on the 4th iteration
+	# "good luck" on the 8th iteration
+	# "Best School" for all other iterations
+
+i=1
+
+while ((i  <= 10)); do
+	if [ $i -eq 4 ]; then
+		echo "bad luck"
+	elif [ $i -eq 8 ]; then
+		echo "good luck"
+	else
+		echo "Best School"
+	fi
+
+	((i++))
+done
