@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# This script terminates all "7-highlander" processes
+
+pkill -f "./7-highlander"
