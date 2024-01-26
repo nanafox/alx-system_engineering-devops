@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# This script prints all processes running on the current system ib a
+# user-oriented format. 
+
+ps faux
