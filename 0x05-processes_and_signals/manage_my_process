@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# This script simulates a daemon/service
+
+tmp_file=/tmp/my_process
+
+while true
+do
+	echo "I am alive!" >> $tmp_file 
+	sleep 2 
+done
