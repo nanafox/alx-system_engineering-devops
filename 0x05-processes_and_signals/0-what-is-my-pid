@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# This script prints it's Process ID and exit
+
+echo $$
