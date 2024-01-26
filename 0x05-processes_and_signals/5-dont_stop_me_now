@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# This script terminates the '4-to_infinity_and_beyond' script
+
+kill "$(pgrep -a bash | grep "4-to_infinity" | cut -f 1 -d ' ')" 2> /dev/null
