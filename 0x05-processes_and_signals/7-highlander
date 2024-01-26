@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# This script displays "To infinity and beyond" indefinitley with a 2-second
+# delay between each output. Also, it ignores the SIGTERM signal when it is
+# received, instead, it outputs "I am invicible!!!"
+
+# ignores the termination signal
+function ignore_sigterm()
+{
+	echo "I am invincible!!!"
+}
+
+trap ignore_sigterm SIGTERM
+
+while true
+do
+	echo "To infinity and beyond"
+	sleep 2
+done
