@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# This script handles the SIGTERM, SIGQUIT and SIGINT signals
+
+pid_file=/var/run/myscript.pid
+
+function handle_sigterm()
+{
+	echo "I hate the kill command"
+	rm "$pid_file"
+	exit
+}
+
+function handle_sigint()
+{
+	echo "Y U no love me?!"
+	rm "$pid_file"
+	exit
+}
+
+function handle_sigquit()
+{
+	rm "$pid_file"
+	exit
+}
+
+
+trap handle_sigterm SIGTERM
+trap handle_sigint SIGINT
+trap handle_sigquit SIGQUIT
+
+echo "$$" > "$pid_file"
+
+while true
+do
+	echo "To infinity and beyond"
+done
