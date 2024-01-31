@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# This script configures the /etc/hosts file on an Ubuntu server with the
+# following:
+	# `localhost` resolves to "127.0.0.2"
+	# `facebook.com` resolves to "8.8.8.8"
+
+# create a temporary version of the hosts file
+cp /etc/hosts /tmp/hosts
+
+# update the temporary hosts file
+sed -i s/[[:digit:]].*localhost$/127.0.0.2\\tlocalhost/ /tmp/hosts
+
+# check for exisiting "facebook.com" entry in the hosts file
+grep "facebook.com" /tmp/hosts > /dev/null
+
+# add an entry for "facebook.com" if it doesn't exist already
+if [[ $? == 1 ]]
+then
+	echo -e "\n8.8.8.8\tfacebook.com" >> /tmp/hosts
+else
+	# update it
+	sed -i s/[[:digit:]].*facebook.com$/8.8.8.8\\tfacebook.com/ /tmp/hosts
+fi
+
+# overwrite the current hosts file with the updated info
+cp /tmp/hosts /etc/hosts
+
+# clean up and exit
+rm /tmp/hosts
