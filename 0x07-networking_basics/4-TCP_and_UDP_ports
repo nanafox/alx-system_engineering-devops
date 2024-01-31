@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# This script displays listening sockets and the program each socket belongs to.
+netstat -lp
