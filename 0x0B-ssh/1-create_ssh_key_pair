@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# This script generates a 4096-bit RSA key
+
+ssh-keygen -f school -b 4096 -t rsa -N "betty" -C "holberton"
