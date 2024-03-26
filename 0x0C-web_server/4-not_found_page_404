@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# This script installs the Nginx web server and configures the initial "Hello
+# world" page.
+
+if [[ $EUID -ne 0 ]]; then
+  echo "ERROR: You need to be root to run this script" 1>&2
+  exit 1
+fi
+
+# Update the package list and install Nginx
+apt-get update
+apt-get install -y nginx
+
+# Create the default "Hello world" page
+echo "Hello World!" > /var/www/html/index.html
+
+# configure error 404 page
+echo "Ceci n'est pas une page" > /usr/share/nginx/html/404.html
+
+# confifure the server for redirection and 404 page
+echo -e "\tserver_name _;
+\tlocation /redirect_me {
+\t\treturn 301 https://lzcorp-landing-page.vercel.app/;
+\t}
+
+\terror_page 404 /404.html;
+\tlocation = /404.html {
+\t\troot /usr/share/nginx/html;
+\t\tinternal;
+\t}
+" > /tmp/new_config
+
+sed -i '/server_name _;/{
+    r /tmp/new_config
+}' /etc/nginx/sites-available/default
+
+# Remove the temporary configuration file
+rm /tmp/new_config
+
+# Start the Nginx service
+service nginx start
+
+if [[ ! $? ]]; then
+  echo "ERROR: Failed to start Nginx" 1>&2
+  exit 1
+fi
