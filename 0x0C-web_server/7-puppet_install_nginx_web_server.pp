@@ -2,21 +2,34 @@
 # - A root page that displays "Hello World!"
 # - A redirection page that redirects to https://lzcorp-landing-page.vercel.app/
 # - A 404 page that displays "Ceci n'est pas une page"
+
 $nginx_package_name = 'nginx'
 $nginx_service_name = 'nginx'
 $root_dir = '/usr/share/nginx/html'
 $config_file = '/etc/nginx/sites-available/default'
-$temp_config_file = '/tmp/new_config'
 $server_config = @(END)
-	location /redirect_me {
-		return 301 https://lzcorp-landing-page.vercel.app/;
-	}
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
-	error_page 404 /404.html;
-	location = /404.html {
-	  root /usr/share/nginx/html;
-	  internal;
-	}
+    root /var/www/html;
+
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    error_page 404 /404.html;
+    location = /404.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    location /redirect {
+        return 301 https://lzcorp-landing-page.vercel.app/;
+    }
+}
 END
 
 exec { 'apt-get update':
@@ -41,28 +54,20 @@ file { "${root_dir}/404.html":
   require => Package[$nginx_package_name],
 }
 
-file { $temp_config_file:
-  ensure  => file,
+file { $config_file:
+  ensure  => present,
   content => $server_config,
   require => Package[$nginx_package_name],
 }
 
-exec { 'update_nginx_config':
-  command => "sed -i '/server_name _;/{
-    r ${temp_config_file}
-  }' ${config_file}",
+exec { 'nginx-restart':
+  command => '/usr/sbin/service nginx restart',
   path    => ['/usr/bin', '/usr/sbin'],
-  require => File[$temp_config_file],
-}
-
-exec { 'remove-config-file':
-  command => "rm ${temp_config_file}",
-  path    => ['/usr/bin', '/usr/sbin'],
-  require => Exec['update_nginx_config'],
+  require => File[$config_file],
 }
 
 service { $nginx_service_name:
   ensure  => running,
   enable  => true,
-  require => Exec['update_nginx_config'],
+  require => Exec['nginx-restart'],
 }
