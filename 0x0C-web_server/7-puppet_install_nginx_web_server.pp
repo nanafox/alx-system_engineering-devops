@@ -8,15 +8,15 @@ $root_dir = '/usr/share/nginx/html'
 $config_file = '/etc/nginx/sites-available/default'
 $temp_config_file = '/tmp/new_config'
 $server_config = @(END)
-server_name _; 
-location /redirect_me { 
-  return 301 https://lzcorp-landing-page.vercel.app/; 
-} 
-error_page 404 /404.html; 
-location = /404.html { 
-  root /usr/share/nginx/html; 
-  internal; 
-}
+	location /redirect_me {
+		return 301 https://lzcorp-landing-page.vercel.app/;
+	}
+
+	error_page 404 /404.html;
+	location = /404.html {
+	  root /usr/share/nginx/html;
+	  internal;
+	}
 END
 
 exec { 'apt-get update':
