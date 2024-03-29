@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# This script configures a brand new Ubuntu server to run a simple web server
+# (nginx) and return a custom HTTP response header `X-Served-By` which bears
+# the name of the server that responded to the request.
+
+if [ "$EUID" -ne 0 ]; then
+  echo "You need to be root to run this script."
+  exit 1
+fi
+
+# Update packages
+apt update
+
+# Install nginx
+apt install -y nginx
+
+# Create a custom HTTP response header
+echo "add_header X-Served-By $HOSTNAME;" > /etc/nginx/conf.d/custom_response_headers.conf
+
+# Restart nginx
+service nginx restart
