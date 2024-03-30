@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# This script installs and configures the HAproxy load balancer. It configures
+# the server to send traffic to two web servers. The load balanceing algorithm
+# is round-robin.
+config="
+frontend lzc_frontend
+    bind *:80
+    mode http
+    default_backend lzc_backend
+
+backend lzc_backend
+    balance roundrobin
+    server 514753-web-01 web-01.lzcorp.tech:80 check
+    server 514753-web-02 web-02.lzcorp.tech:80 check
+"
+
+if [ $EUID -ne 0 ]; then
+    echo "You must be root to run this script."
+    exit 1
+fi
+
+function add_config() {
+    # let's do some house checking first, ensure the configuration does not 
+    # exist before we append to it
+    grep -q -e "lzc_frontend" -e "lzc_backend" /etc/haproxy/haproxy.cfg
+
+    status=$?
+    if [[ $status -ne 0 ]]; then
+        # configure HAproxy
+        echo "$config" >> /etc/haproxy/haproxy.cfg
+    else
+        echo "Configuration already exists."
+        exit
+    fi
+
+    grep -q "ENABLED" /etc/default/haproxy
+
+    status=$?
+    if [[ $status -ne 0 ]]; then
+        echo "ENABLED=1" >> /etc/default/haproxy
+    fi
+
+    # restart HAproxy
+    service haproxy restart
+}
+
+# let's save time and check if the HAproxy package is already installed
+which haproxy > /dev/null
+
+status=$?
+if [[ $status -ne 0 ]]; then
+    # update package list
+    apt-get update -y
+
+    # enable dedicated PPA for HAproxy 2.8
+    apt-get install --no-install-recommends -y software-properties-common
+    add-apt-repository -y ppa:vbernat/haproxy-2.8
+
+    # install HAproxy
+    apt-get install -y haproxy
+
+    if [[ ! $? ]]; then
+        echo "Failed to install HAproxy."
+        exit 1
+    fi
+
+    add_config
+else
+    # HAproxy is already installed, just add the configuration
+    add_config
+fi
