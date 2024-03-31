@@ -1,29 +1,23 @@
-# This manifest configures an Ubuntu server with the Nginx web server and a
-# custom response header `X-Served-By` that contains the hostname of the server
-# that served the request.
-
-exec { 'apt-get update':
-  command => '/usr/bin/apt-get update',
-  path    => '/usr/bin',
-  require => Package['nginx'],
+# Update package information
+exec { 'apt-update':
+  command => '/usr/bin/apt-get -y update',
+  path    => ['/usr/bin', '/bin'],
 }
 
+# Install Nginx package
 package { 'nginx':
   ensure => installed,
 }
 
-# add the hostname as the custom header
-file { '/etc/nginx/conf.d/custom_response_headers.conf':
-  ensure  => file,
-  content => "add_header X-Served-By ${::facts['networking']['hostname']};\n",
-  require => Package['nginx'],
-  notify  => Service['nginx'],
+# Configure Nginx to add the custom HTTP header
+file_line { 'add custom header':
+  ensure => present,
+  path   => '/etc/nginx/sites-available/default',
+  line   => "\tadd_header X-Served-By ${hostname};",
+  after  => 'server_name _;',
 }
 
-# restart the server
+# Ensure Nginx is running
 service { 'nginx':
-  ensure    => running,
-  enable    => true,
-  hasstatus => true,
-  require   => Package['nginx'],
+  ensure => running,
 }
