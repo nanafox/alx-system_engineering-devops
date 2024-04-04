@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# This script displays information about subdomains
+
+domain=$1
+subdomain=$2
+result=
+
+# print the information about the result returned
+print_domain_info() {
+    record_type=$(echo "$result" | awk '{print $4}')
+    ip_addr=$(echo "$result" | awk '{print $5}')
+    echo -n "The subdomain $subdomain is a $record_type record and points "
+    echo "to $ip_addr"
+}
+
+# get information about the subdomains
+get_domain_info () {
+    if [[ $domain = "" ]]; then
+        echo "Domain name missing."
+        exit 1
+    fi
+    
+    if [[ $subdomain = "" ]]; then
+        known_sub_domains=("www" "lb-01" "web-01" "web-02")
+        for subdomain in "${known_sub_domains[@]}"; do
+            result=$(dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION'\
+                    | tail -1)
+            print_domain_info
+        done
+        exit
+    fi
+
+    result=$(dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION' | tail -1)
+    print_domain_info
+}
+
+get_domain_info
