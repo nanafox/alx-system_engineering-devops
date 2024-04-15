@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
 # This script configures the firewall on the server
 
-apt update
-apt install ufw -y
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root"
+    exit
+fi
+
+# check if ufw exists
+if ! command -v ufw &> /dev/null; then
+    echo "ufw not found, installing..."
+    apt update
+    apt install ufw -y
+fi
 
 ufw default deny incoming
 ufw default allow outgoing
@@ -11,4 +20,35 @@ ufw allow ssh
 ufw allow http
 ufw allow https
 
+# Add a rule to redirect port 8080 to port 80
+REDIRECT_RULE="
+*nat
+:PREROUTING ACCEPT [0:0]
+-A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 80
+COMMIT
+"
+
+rule="tcp --dport 8080 -j REDIRECT --to-port 80"
+
+# let's delete the previous similar rule
+while true; do
+    # Delete the rule if it exists
+    iptables -t nat -D PREROUTING -p $rule &> /dev/null
+    if [ $? -ne 0 ]; then
+        break
+    fi
+done
+
+sub="-A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 80"
+
+# Check if the rule already exists in the file
+if ! grep -qe "$sub" /etc/ufw/before.rules; then
+    # Append the rule to the file
+    echo "$REDIRECT_RULE" | sudo tee -a /etc/ufw/before.rules > /dev/null
+    echo "Rule added successfully"
+else
+    echo "Rule already exists, skipping..."
+fi
+
 ufw --force enable
+ufw reload
