@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # This script configures and runs `nginx` as the nginx user
-sed -i "/user/c\user nginx;" /etc/nginx/nginx.conf
+sed -i "s/#user www-data/user nginx/" /etc/nginx/nginx.conf
 sed -i "s/\<80\>/8080/g" /etc/nginx/sites-available/default
+chmod 644 /etc/nginx/nginx.conf
 pkill -9 apache2 # apache2 is running by default on port 8080 on the server
-service nginx start
+sudo -u nginx service nginx restart
