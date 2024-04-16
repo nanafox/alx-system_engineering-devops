@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# This script generates a MySQL dump and creates a compresses archive of it
+
+# let's ensure things went well before continue.
+# if it didn't, we'll clean up and exit.
+if ! mysqldump -u root --password="$1" --all-databases > backup.sql 2> /dev/null; then
+    echo "[ERROR] Couldn't dump databases. Ensure the password is correct"
+    echo "Exiting..."
+    rm backup.sql &> /dev/null
+    exit 1
+fi
+
+# compress the dump
+tar -czf "$(date +%d-%m-%Y)".tar.gz backup.sql
