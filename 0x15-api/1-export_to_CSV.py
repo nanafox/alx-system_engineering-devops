@@ -5,7 +5,6 @@ This module provides a function to export user tasks to a CSV file.
 """
 
 import csv
-import requests
 import sys
 
 lazy_methods = __import__("0-gather_data_from_an_API")
