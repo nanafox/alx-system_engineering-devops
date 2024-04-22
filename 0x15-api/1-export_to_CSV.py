@@ -39,21 +39,13 @@ def export_to_csv(user_id: int, username: str, tasks: "list[dict]") -> None:
             )
 
 
-def get_username(user_id):
-    """Returns the username with the given USER ID."""
-    return (
-        requests.get(f"{lazy_methods.URL}/{user_id}")
-        .json().get("username", None)
-    )
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         sys.stderr.write(f"Usage: {sys.argv[0]} <user_id>\n")
         sys.exit(1)
 
     user_id = sys.argv[1]
-    user = get_username(user_id)
+    user = lazy_methods.get_username(user_id)
     if user is None:
         sys.stderr.write("Invalid user id.\n")
         sys.exit(1)
