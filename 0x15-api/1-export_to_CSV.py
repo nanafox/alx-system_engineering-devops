@@ -26,7 +26,6 @@ def export_to_csv(user_id: int, username: str, tasks: "list[dict]") -> None:
         writer = csv.DictWriter(
             csv_file, fieldnames=fieldnames, quoting=csv.QUOTE_ALL
         )
-        writer.writeheader()
 
         for task in tasks:
             writer.writerow(
