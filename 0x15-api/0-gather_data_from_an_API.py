@@ -55,7 +55,7 @@ def print_completed_tasks(
     )
 
     for task in completed_tasks:
-        print(f"     {task.get('title')}")
+        print(f"\t {task.get('title')}")
 
 
 def get_username(user_id: int) -> "str | None":
