@@ -34,7 +34,7 @@ def get_completed_tasks(tasks: "list[dict]") -> "list[dict]":
     Returns:
         list[dict]: A list of dictionaries of all completed TODOs.
     """
-    return [task for task in tasks if task.get('completed') is True]
+    return [task for task in tasks if task.get("completed") is True]
 
 
 def print_completed_tasks(
@@ -58,18 +58,32 @@ def print_completed_tasks(
         print(f"\t {task.get('title')}")
 
 
-def get_username(user_id: int) -> "str | None":
+def get_name(user_id: int) -> "str | None":
     """
-    Retrieves the username associated with the given user ID from an API.
+    Retrieves the name associated with the given user ID from an API.
 
     Args:
         user_id (int): The ID of the user.
 
     Returns:
-        str | None: The username associated with the user ID, or
+        str | None: The name associated with the user ID, or
         None if the username is not found.
     """
     return requests.get(f"{URL}/{user_id}").json().get("name", None)
+
+
+def get_username(user_id):
+    """
+    Retrieves the name associated with the given user ID from an API.
+
+    Args:
+        user_id (int): The ID of the user.
+
+    Returns:
+        str | None: The name associated with the user ID, or
+        None if the username is not found.
+    """
+    return requests.get(f"{URL}/{user_id}").json().get("username", None)
 
 
 if __name__ == "__main__":
@@ -77,7 +91,7 @@ if __name__ == "__main__":
         sys.stderr.write(f"Usage: {sys.argv[0]} <user_id>\n")
         sys.exit(1)
 
-    user = get_username(sys.argv[1])
+    user = get_name(sys.argv[1])
     if user is None:
         sys.stderr.write("Invalid user id.\n")
         sys.exit(1)
