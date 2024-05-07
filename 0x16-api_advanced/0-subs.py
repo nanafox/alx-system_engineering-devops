@@ -19,6 +19,7 @@ def number_of_subscribers(subreddit: str) -> int:
     response = requests.get(
         "https://www.reddit.com/r/{}/about.json".format(subreddit),
         allow_redirects=False,
+        headers={"user_agent": "nabuntu_bot-01"},
     )
 
     return (
