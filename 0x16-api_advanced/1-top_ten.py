@@ -6,7 +6,7 @@ posts for a give subreddit."""
 import requests
 
 
-def top_ten(subreddit: str) -> None:
+def top_ten(subreddit):
     """
     Prints the titles of the top 10 hot posts from a given subreddit.
 
