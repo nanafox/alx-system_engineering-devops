@@ -19,7 +19,8 @@ def number_of_subscribers(subreddit):
     response = requests.get(
         "https://www.reddit.com/r/{}/about.json".format(subreddit),
         allow_redirects=False,
-        headers={"user_agent": "nabuntu_bot-01"},
+        headers={"user-agent": "nabuntu_bot-01"},
+        timeout=60,
     )
 
     return (
