@@ -8,8 +8,7 @@ server {
                 alias /data/web_static/current/;
         }
 
-        location /airbnb-onepage {
-                include proxy_params;
+        location /airbnb-onepage/ {
                 proxy_pass http://0.0.0.0:5000;
         }
 
